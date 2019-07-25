@@ -1,0 +1,10 @@
+1.
+Dans QGIS:
+Extension -> Installer / Gérer les extentions -> Installer depuis un ZIP -> rechercher le "qstream.zip" du présent dossier.
+
+2.
+Charger Qstream dans le gestionnaire de plugin QGis3
+
+
+
+NB. Installer dans osgeo pyexcel_ods (appeler aurélien clairais)

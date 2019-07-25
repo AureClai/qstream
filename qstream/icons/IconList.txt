@@ -1,0 +1,16 @@
+<file>icons/addLink.png</file>
+<file>icons/addNode.png</file>
+<file>icons/addReverse2.png</file>
+<file>icons/createODmatrix.png</file>
+<file>icons/deleteNodes.png</file>
+<file>icons/export.png</file>
+<file>icons/general.png</file>
+<file>icons/importODmatrix.png</file>
+<file>icons/load.png</file>
+<file>icons/mergeNodes.png</file>
+<file>icons/new.png</file>
+<file>icons/reverseLink2.png</file>
+<file>icons/roadType.png</file>
+<file>icons/save.png</file>
+<file>icons/simulation.png</file>
+<file>icons/splitNode.png</file>
