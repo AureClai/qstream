@@ -27,15 +27,23 @@ A venir (Github Cerema)
 
 Installation
 ---
-1. Compresser le dossier *qstream* dans une archive ZIP (.zip).
-2. Dans Qgis :
+### Installation de ```pyexcel_ods```
+1. Ouvrir l'invite de commande OSGEO4W en administrateur
+2. Taper ```py3_env```
+3. Taper ```qt5_env```
+4. Taper ```pip install pyexcel_ods```
+   
+### Installation du plugin
+
+5. Compresser le dossier *qstream* dans une archive ZIP (.zip).
+6. Dans Qgis :
    1. Extension
    2. Installer / Gérer les extensions
    3. Installer depuis un ZIP
    4. Rechercher l'archive crée en étape 1
-3. Charger QStream dans le gestionnaire de plugin
-4. Cliquer sur l'icône invisible dans la barre des outils QGIS.
-5. Avec QStream, importer le fichier d'exemple `data.gpkg` pour tester l'installation.
+7. Charger QStream dans le gestionnaire de plugin
+8. Cliquer sur l'icône invisible dans la barre des outils QGIS.
+9.  Avec QStream, importer le fichier d'exemple `data.gpkg` pour tester l'installation.
 
 Utilisation
 ---
