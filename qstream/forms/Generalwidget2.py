@@ -11,7 +11,7 @@ from PyQt5 import uic, QtWidgets, QtCore
 import os
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-FORM_CLASS, _ = uic.loadUiType(os.path.join(dir_path, 'General_widget.ui'))
+FORM_CLASS, _ = uic.loadUiType(os.path.join(dir_path, 'General_widget2.ui'))
 
 def convertToSeconds(qtime):
     return qtime.hour() * 3600 + qtime.minute() * 60 + qtime.second()
@@ -22,18 +22,18 @@ def convertToQTime(seconds):
     secs = int(seconds % 60)
     return QtCore.QTime(hours, minutes, secs)
 
-class GeneralWidget(QtWidgets.QDialog, FORM_CLASS):
+class GeneralWidget2(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, values, parent = None):
-        super(GeneralWidget, self).__init__()
+        super(GeneralWidget2, self).__init__()
         # setup the ui from the Qt designer
         self.setupUi(self)
 
         self.setWindowTitle("Change General parameters")
 
         # setup the text in LE
-        self.beg_TE.setTime(convertToQTime(int(values[1])))
-        self.end_TE.setTime(convertToQTime(int(values[2])))
-        self.per_TE.setTime(convertToQTime(int(values[3])))
+        self.beg_TE.setTime(convertToQTime(values[1]))
+        self.end_TE.setTime(convertToQTime(values[2]))
+        self.per_TE.setTime(convertToQTime(values[3]))
         self.upcapacity_RB.setChecked(bool(int(values[4])))
         self.streamDir_LE.setText(values[5])
 
@@ -70,7 +70,7 @@ class GeneralWidget(QtWidgets.QDialog, FORM_CLASS):
         self.update()
 
 if __name__ == '__main__':
-    d = GeneralWidget([0, 25000,26580, 900,0, ''])
+    d = GeneralWidget2([0, 25000,26580, 900,0, ''])
     if d.exec_ () == QtWidgets.QDialog.Accepted:
             res = d.val
     print(res)

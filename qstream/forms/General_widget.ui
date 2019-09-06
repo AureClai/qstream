@@ -26,32 +26,47 @@
     <item>
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>Début de la simulation (en secondes)</string>
+       <string>Début de la simulation</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="start_LE"/>
+     <widget class="QTimeEdit" name="beg_TE">
+      <property name="displayFormat">
+       <string>HH:mm:ss</string>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>Fin de la simulation (en secondes)</string>
+       <string>Fin de la simulation</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="end_LE"/>
+     <widget class="QTimeEdit" name="end_TE">
+      <property name="displayFormat">
+       <string>HH:mm:ss</string>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_3">
       <property name="text">
-       <string>Période pour la demande (en secondes)</string>
+       <string>Période pour la demande</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="step_LE"/>
+     <widget class="QTimeEdit" name="per_TE">
+      <property name="displayFormat">
+       <string>HH:mm:ss</string>
+      </property>
+      <property name="calendarPopup">
+       <bool>false</bool>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QRadioButton" name="upcapacity_RB">
