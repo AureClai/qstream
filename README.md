@@ -1,11 +1,5 @@
 # QStream - Plugin QGIS pour Stream
 
-ATTENTION :
-Pour le moment le lancement de Stream depuis QStream n'est pas possible sur MacOS. Des travaux de mise à niveau sont prévus...
-Cependant, sur MacOS, QStream permet la création des scénarios et l'export en format `.npy`.
-Il faudra donc lancer `stream-python` en ligne de commande.
-{: .alert .alert-warning}
-
 ## Qu'est ce que QStream
 
 ### Contexte
@@ -91,7 +85,9 @@ aurelien.clairais@cerema.fr
 
 ## Bugs
 
-Voir contact.
+Pour le moment le lancement de Stream depuis QStream n'est pas possible sur MacOS. Des travaux de mise à niveau sont prévus...
+Cependant, sur MacOS, QStream permet la création des scénarios et l'export en format `.npy`.
+Il faudra donc lancer `stream-python` en ligne de commande.
 
 ## Licence
 
