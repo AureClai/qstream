@@ -71,7 +71,7 @@ Stream-Python : https://gitlab.cerema.fr/Stream/stream-python
 
 ## Utilisation
 
-Le guide d'utilisation est disponible dans ALLO !:
+Le guide d'utilisation est disponible dans :
 
 ```
 qstream/doc/index.html
