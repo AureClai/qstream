@@ -208,10 +208,48 @@ class QStream:
         # remove the toolbar
         del self.toolbar
 
+    def check_dependancies(self):
+        from PyQt5 import QtWidgets
+        import pip
+        modules_to_install = []
+        # pyexcel_ods
+        try:
+            import pyexcel_ods
+        except:
+            modules_to_install.append("pyexcel_ods")
+        
+        # requests
+        try:
+            import requests
+        except:
+            modules_to_install.append("requests")
+
+        try:
+            import stream
+        except:
+            modules_to_install.append("stream")
+        
+        if len(modules_to_install) > 0:
+            from .forms.dependancy_install import DependancyInstall
+            d = DependancyInstall(['pyexcel_ods', 'stream'])
+            # Run the dialog and check the result
+            result = d.exec()
+            if result:
+                return
+            else:
+                alert = QtWidgets.QMessageBox()
+                alert.setIcon(QtWidgets.QMessageBox.Warning)
+                alert.setWindowTitle("Attention")
+                alert.setText(f"Installations interrompues...")
+                alert.exec_()
+                return
     #--------------------------------------------------------------------------
 
     def run(self):
         """Run method that loads and starts the plugin"""
+
+        self.check_dependancies()
+
 
         if not self.pluginIsActive:
             self.pluginIsActive = True

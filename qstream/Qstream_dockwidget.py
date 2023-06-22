@@ -27,10 +27,11 @@ import os
 import shutil
 import numpy as np
 from sys import executable
-from pyexcel_ods import save_data, get_data
 import json
 from functools import partial
 import subprocess
+import pip
+
 
 from qgis.utils import iface
 from qgis.core import QgsProject, QgsWkbTypes, QgsFeature, QgsGeometry, QgsPointXY, QgsFeatureRequest, QgsExpression, QgsVectorLayer, QgsVectorFileWriter
@@ -38,7 +39,7 @@ from qgis.core.additions.edit import edit
 
 
 from PyQt5 import QtGui, QtWidgets, uic, QtCore
-from PyQt5.QtCore import pyqtSignal, QCoreApplication, QSize
+from PyQt5.QtCore import pyqtSignal, QCoreApplication, QSize, QProcess
 
 #...
 # other forms
@@ -48,12 +49,9 @@ from .forms.RTwidget import RTWidget
 from .forms.generateXTwidget import generateXTWidget
 from .scenario import Scenario
 
-
 """ UTILITIES ! """
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'Qstream_dockwidget_network2.ui'))
-
-STREAM_MIN_VERSION = '3.1.0'
 
 BASE_DIR = os.path.dirname(__file__)
 def absolutePath(relativePath):
@@ -246,7 +244,8 @@ class QStreamDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.nodeAn_PB.clicked.connect(self.nodeAnalysis)
         self.generateXT_PB.clicked.connect(self.generateXT)
         self.XTDiag_PB.clicked.connect(self.diagXT)
-        self.traficolor_PB.clicked.connect(self.traficolor)
+        # self.traficolor_PB.clicked.connect(self.traficolor)
+        self.traficolor_PB.setEnabled(False)
 
         #...
         # Export csv
@@ -987,12 +986,12 @@ class QStreamDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 newFeat['name'] = 'ActiveUpStreamCapacity'
                 newFeat['value'] = int(General['ActiveUpstreamCapacity'])
                 newFeats.append(newFeat)
-                # Active upstream capa
-                newFeat = QgsFeature(layer.fields())
-                newFeat['fid'] = 5
-                newFeat['name'] = 'StreamDirectory'
-                newFeat['value'] = General['StreamDirectory']
-                newFeats.append(newFeat)
+                # # Active upstream capa
+                # newFeat = QgsFeature(layer.fields())
+                # newFeat['fid'] = 5
+                # newFeat['name'] = 'StreamDirectory'
+                # newFeat['value'] = General['StreamDirectory']
+                # newFeats.append(newFeat)
                 # add the new feats to the layer
                 (res, outFeats) = layer.dataProvider().addFeatures(newFeats)
 
@@ -1080,43 +1079,8 @@ class QStreamDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         return filename
 
     def simulationCallback(self):
-        npyPath = self.exportCallback()
-        try:
-            layer = QgsProject.instance().mapLayersByName("General")[0]
-        except IndexError:
-            print("No General Layer")
-        #...
-        feat = QgsFeature()
-        layer.getFeatures(QgsFeatureRequest(QgsExpression("\"fid\"='{}'".format(5)))).nextFeature(feat)
-        streamFolder = feat['value']
 
-        #...
-        #check stream
-        try:
-            f = open(os.path.join(streamFolder, 'infos'))
-        except FileNotFoundError:
-            print('The folder of stream is not correct')
-            return
-
-        lines = f.readlines()
-        infos = {}
-        for line in lines:
-            lineSplitted = line.split(' = ')
-            infos[lineSplitted[0]] = lineSplitted[1]
-
-        version_vect = [int(item) for item in infos['version'].split('.')]
-        goodV = [int(item) for item in STREAM_MIN_VERSION.split('.')]
-        vInt = sum([version_vect[i] * 100**(2-i) for i in range(3)])
-        goodvInt = sum([goodV[i] * 100**(2-i) for i in range(3)])
-
-        if vInt < goodvInt:
-            message = 'La version de stream est trop ancienne, utilisez au minimum : ' + STREAM_MIN_VERSION
-            print(message)
-            return
-        #...
-        # launch stream
-        command = os.path.join(os.path.dirname(os.path.dirname(executable)),'apps', 'Python37', 'python') + " " + os.path.join(streamFolder,'stream', 'main.py') + " " + npyPath
-        process = subprocess.Popen(command, creationflags=subprocess.CREATE_NEW_CONSOLE)
+        subprocess.Popen('python -m stream_gui', shell=False)
 
         return
 
@@ -1202,13 +1166,8 @@ class QStreamDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
     def displayNetwork(self):
         filePath = self.askForSimulation()
-        if not self.getStreamFolder() in sys.path:
-            sys.path.insert(0, self.getStreamFolder())
-            print('Added stream folder to path')
-        else:
-            print('Stream path already added...')
         from stream.analysis.analysis import plot_network as pnet
-        simulation = np.load(filePath).item(0)
+        simulation = np.load(filePath, allow_pickle=True).item(0)
         pnet(simulation)
         return
 
@@ -1222,15 +1181,10 @@ class QStreamDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # get selected...
         selectedFids = [feat.id() for feat in linkLayer.selectedFeatures()]
         filePath = self.askForSimulation()
-        #...
-        if not self.getStreamFolder() in sys.path:
-            sys.path.insert(0, self.getStreamFolder())
-            print('Added stream folder to path')
-        else:
-            print('Stream path already added...')
+
         #...
         from stream.analysis.analysis import compute_travel_times_on_links, compute_stats_on_links, plot_flow_speed_on_link
-        Simulation = np.load(filePath).item(0)
+        Simulation = np.load(filePath, allow_pickle=True).item(0)
         TravelTimes = compute_travel_times_on_links( Simulation )
         Statistics = compute_stats_on_links( Simulation, TravelTimes )
 
@@ -1249,14 +1203,8 @@ class QStreamDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         selectedFids = [feat.id() for feat in linkLayer.selectedFeatures()]
         filePath = self.askForSimulation()
         #...
-        if not self.getStreamFolder() in sys.path:
-            sys.path.insert(0, self.getStreamFolder())
-            print('Added stream folder to path')
-        else:
-            print('Stream path already added...')
-        #...
         from stream.analysis.analysis import plot_travel_times_on_path as TTpath
-        simulation = np.load(filePath).item(0)
+        simulation = np.load(filePath, allow_pickle=True).item(0)
         for fid in selectedFids:
             TTpath(simulation, [fid])
         return
@@ -1271,15 +1219,9 @@ class QStreamDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         selectedFids = [feat.id() for feat in layer.selectedFeatures()]
         filePath = self.askForSimulation()
         #...
-        if not self.getStreamFolder() in sys.path:
-            sys.path.insert(0, self.getStreamFolder())
-            print('Added stream folder to path')
-        else:
-            print('Stream path already added...')
-        #...
         from stream.analysis.analysis import plot_travel_times_on_path as TTpath
         import stream.initialization.routes as routes
-        simulation = np.load(filePath).item(0)
+        simulation = np.load(filePath, allow_pickle=True).item(0)
         for nodeid in selectedFids:
             remainingIDs = [fid for fid in selectedFids]
             remainingIDs.remove(nodeid)
@@ -1299,14 +1241,8 @@ class QStreamDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         selectedFids = [feat.id() for feat in layer.selectedFeatures()]
         filePath = self.askForSimulation()
         #...
-        if not self.getStreamFolder() in sys.path:
-            sys.path.insert(0, self.getStreamFolder())
-            print('Added stream folder to path')
-        else:
-            print('Stream path already added...')
-        #...
         from stream.analysis.analysis import plot_node_analysis as NodeAn, node_info
-        simulation = np.load(filePath).item(0)
+        simulation = np.load(filePath, allow_pickle=True).item(0)
         for nodeid in selectedFids:
             NodeEvent = node_info( simulation, nodeid )
             NodeAn(NodeEvent)
@@ -1327,42 +1263,10 @@ class QStreamDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         dt = str(res['dt'])
         if len(name)==0:
             name = 'XTinfos'
-
-        try:
-            layer = QgsProject.instance().mapLayersByName("General")[0]
-        except IndexError:
-            print("No General Layer")
-        #...
-        feat = QgsFeature()
-        layer.getFeatures(QgsFeatureRequest(QgsExpression("\"fid\"='{}'".format(5)))).nextFeature(feat)
-        streamFolder = feat['value']
-
-        #...
-        #check stream
-        try:
-            f = open(os.path.join(streamFolder, 'infos'))
-        except FileNotFoundError:
-            print('The folder of stream is not correct')
-
-        lines = f.readlines()
-        infos = {}
-        for line in lines:
-            lineSplitted = line.split(' = ')
-            infos[lineSplitted[0]] = lineSplitted[1]
-
-        version_vect = [int(item) for item in infos['version'].split('.')]
-        goodV = [int(item) for item in STREAM_MIN_VERSION.split('.')]
-        vInt = sum([version_vect[i] * 100**(2-i) for i in range(3)])
-        goodvInt = sum([goodV[i] * 100**(2-i) for i in range(3)])
-
-        if vInt < goodvInt:
-            message = 'The stream version is too old, you need at least the version ' + STREAM_MIN_VERSION
-            print(message)
-            return
         #...
         # launch stream
-        command = os.path.join(os.path.dirname(os.path.dirname(executable)),'apps', 'Python37', 'python') + " " + os.path.join(streamFolder,'stream', 'analysis','diagXT.py') + " " + file + " " + name + " " + dx + " " + dt
-        process = subprocess.Popen(command, creationflags=subprocess.CREATE_NEW_CONSOLE)
+        command = f"python -m stream.analysis.diagXT {file} {name} {dx} {dt}"
+        process = subprocess.Popen(command)
         return
 
     def diagXT(self):
@@ -1375,59 +1279,38 @@ class QStreamDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # get selected...
         selectedFids = [feat.id() for feat in linkLayer.selectedFeatures()]
         #...
-        if not self.getStreamFolder() in sys.path:
-            sys.path.insert(0, self.getStreamFolder())
-            print('Added stream folder to path')
-        else:
-            print('Stream path already added...')
-        #...
         from stream.analysis.XTplots import plotXTDiagOnLink as plotXT
-        Xtinfos = np.load(filePath).item(0)
+        Xtinfos = np.load(filePath, allow_pickle=True).item(0)
         for fid in selectedFids:
             plotXT(Xtinfos[fid], fid)
         return
 
-    def traficolor(self):
-        fileSimu = self.askForSimulation()
-        fileXT = self.askForXTinfos()
-        infos = {
-        'fileSimu' : fileSimu,
-        'fileXT' : fileXT
-        }
-        if not self.getStreamFolder() in sys.path:
-            sys.path.insert(0, self.getStreamFolder())
-            print('Added stream folder to path')
-        else:
-            print('Stream path already added...')
-        #...
-        from stream.analysis.traficolorWidget import TraficolorWidget
-        dial = TraficolorWidget(infos)
-        return
+    # def traficolor(self):
+    #     fileSimu = self.askForSimulation()
+    #     fileXT = self.askForXTinfos()
+    #     infos = {
+    #     'fileSimu' : fileSimu,
+    #     'fileXT' : fileXT
+    #     }
+    #     #...
+    #     from stream.analysis.traficolorWidget import TraficolorWidget
+    #     dial = TraficolorWidget(infos)
+    #     return
 
 ###############################################################################
     """ export csv..."""
     def exportSFCallback(self):
         filePath = self.askForSimulation()
-        if not self.getStreamFolder() in sys.path:
-            sys.path.insert(0, self.getStreamFolder())
-            print('Added stream folder to path')
-        else:
-            print('Stream path already added...')
         #...
         from stream.analysis.export import export_flow_speed_on_links as exportSF
-        exportSF(np.load(filePath).item(0), os.path.dirname(filePath))
+        exportSF(np.load(filePath, allow_pickle=True).item(0), os.path.dirname(filePath))
         return
 
     def exportTTCallback(self):
         filePath = self.askForSimulation()
-        if not self.getStreamFolder() in sys.path:
-            sys.path.insert(0, self.getStreamFolder())
-            print('Added stream folder to path')
-        else:
-            print('Stream path already added...')
         #...
         from stream.analysis.export import export_travel_times_on_links as exportTT
-        exportTT(np.load(filePath).item(0), os.path.dirname(filePath))
+        exportTT(np.load(filePath, allow_pickle=True).item(0), os.path.dirname(filePath))
         return
 
 ###############################################################################

@@ -35,14 +35,12 @@ class GeneralWidget(QtWidgets.QDialog, FORM_CLASS):
         self.end_TE.setTime(convertToQTime(int(values[2])))
         self.per_TE.setTime(convertToQTime(int(values[3])))
         self.upcapacity_RB.setChecked(bool(int(values[4])))
-        self.streamDir_LE.setText(values[5])
 
         # display the window
         self.show()
 
         # setup the buttons
         self.ok_button.clicked.connect(self.processOK)
-        self.getDir_PB.clicked.connect(self.getStreamDir)
 
         #init the result
         self.res = ''
@@ -54,7 +52,6 @@ class GeneralWidget(QtWidgets.QDialog, FORM_CLASS):
             end = convertToSeconds(self.end_TE.time())
             step = convertToSeconds(self.per_TE.time())
             upcap = self.upcapacity_RB.isChecked()
-            dir = self.streamDir_LE.text()
         except:
             self.message_LE.setText("Erreur de syntaxe dans les cases à remplir")
             self.update()
@@ -62,12 +59,6 @@ class GeneralWidget(QtWidgets.QDialog, FORM_CLASS):
 
         self.val = {"SimulationStart" : start , "SimulationEnd" : end, "TimeStep" : step, "ActiveUpstreamCapacity" : upcap, "StreamDirectory" : dir}
         self.accept()
-
-    def getStreamDir(self):
-        streamFolder = str(QtWidgets.QFileDialog.getExistingDirectory(None, "Select Stream Directory"))
-        if streamFolder != '':
-            self.streamDir_LE.setText(streamFolder)
-        self.update()
 
 if __name__ == '__main__':
     d = GeneralWidget([0, 25000,26580, 900,0, ''])

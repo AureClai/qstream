@@ -27,47 +27,22 @@ QStream est développé en tant qu'extension du logiciel QGIS 3. De ce fait, il 
 
 ## Où l'obtenir
 
-QStream : https://gitlab.cerema.fr/Stream/qstream
-
-Stream-Python : https://gitlab.cerema.fr/Stream/stream-python
+Stream-Python : https://github.com/AureClai/stream-python
 
 ## Installation
 
-### Installation de `pyexcel_ods`
-
-### Windows
-
-1. Ouvrir l'invite de commande OSGEO4W en administrateur
-2. Taper `py3_env`
-3. Taper `qt5_env`
-4. Taper `pip install pyexcel_ods`
-
-### MacOS
-
-1. Installer une distribution Python possédant pip (Anaconda conseillé)
-2. Dans QGIS, récupérer le `PYTHONPATH` dans :
-   ```
-    Préférences -> Options... -> Système -> Environnement
-   ```
-3. Installer la librairie depuis le pip vers le `PYTHONPATH` :
-   ```
-    pip install target=[PYTHONPATH de 2.] pyexcel_ods
-   ```
-
-### Installation de QStream
-
-### Windows + MacOS
-
-4. Cloner ou télécharger le dossie complet
-5. Compresser le dossier _qstream_ dans une archive ZIP (.zip).
-6. Dans Qgis :
+1. Cloner ou télécharger le dossie complet
+2. Compresser le dossier _qstream_ dans une archive ZIP (.zip).
+3. Dans Qgis :
    ```
     Extension -> Installer / Gérer les extensions -> Installer depuis un ZIP
    ```
-7. Rechercher l'archive crée en étape 1 et l'installer
-8. Charger QStream dans le gestionnaire de plugin
-9. Cliquer sur l'icône invisible dans la barre des outils QGIS.
-10. Avec QStream, importer le fichier d'exemple `data.gpkg` pour tester l'installation.
+4. Rechercher l'archive crée en étape 1 et l'installer
+5. Charger QStream dans le gestionnaire de plugin
+6. Cliquer sur l'icône invisible dans la barre des outils QGIS.
+7. Avec QStream, importer le fichier d'exemple `data.gpkg` pour tester l'installation.
+
+A la première installation, le plugin demandera d'installer des dépendances et notamment Stream.
 
 ## Utilisation
 
@@ -81,13 +56,11 @@ Il est aussi possible de l'ouvrir directement depuis le plugin QStream grâce au
 
 ## Contact
 
-aurelien.clairais@cerema.fr
+aureclai.dev@gmail.com
 
 ## Bugs
 
-Pour le moment le lancement de Stream depuis QStream n'est pas possible sur MacOS. Des travaux de mise à niveau sont prévus...
-Cependant, sur MacOS, QStream permet la création des scénarios et l'export en format `.npy`.
-Il faudra donc lancer `stream-python` en ligne de commande.
+N'hésitez pas à ouvrir une issue
 
 ## Licence
 
